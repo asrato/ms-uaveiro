@@ -1,0 +1,14 @@
+.bg-dark {
+    background-color: #001233 !important;
+}
+
+.navbar-brand {
+    height: 100%;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.table th {
+    border-top-color: transparent !important;
+}
