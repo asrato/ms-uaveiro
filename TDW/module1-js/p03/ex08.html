@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>TDW P03_01</title>
+</head>
+
+<body onload="main()">
+    <div class="bg-light pt-3 pb-3">
+        <div class="container">
+            <h1 class="display-4">Cartões dinâmicos</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div id="cards" style="display: flex; flex-direction: row">
+            <!-- Content goes here -->
+        </div>
+        <form method="'post" style="margin-top: 20px; margin-bottom: 20px" id="form">
+            <div class="form-group">
+                <label for="title">Card Title</label>
+                <input type="text" class="form-control" id="title">
+            </div>
+            <div class="form-group">
+                <label for="title">Card Text</label>
+                <input type="text" class="form-control" id="text">
+            </div>
+            <div class="form-group">
+                <label for="title">Card Image Url</label>
+                <input type="text" class="form-control" id="img">
+            </div>
+            <button style="margin-top: 5px" type="submit" class="btn btn-primary">Adicionar</button>
+        </form>
+    </div>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <script>
+        cards_array = [
+            {
+                title: 'Puppy',
+                text: 'Just a little puppy',
+                img: 'https://picsum.photos./id/237/536/354'
+            },
+            {
+                title: 'Lady and dog',
+                text: 'Just a lady and a dog',
+                img: 'https://picsum.photos/id/1006/367/267'
+            },
+            {
+                title: 'Holy Bible',
+                text: 'Just a boy with his Holy Bible',
+                img: 'https://picsum.photos/id/1010/367/267'
+            },
+
+        ]
+
+        function main() {
+            cards_array.map(card => create_card(card));
+
+            document.querySelector('#form').addEventListener('submit', e => {
+                e.preventDefault();
+                add_card();
+            });
+        }
+
+        const chose_card = (e) => {
+            e.target.classList.toggle('bg-secondary');
+            e.target.classList.toggle('selected');
+
+            const cardElement = e.currentTarget;
+
+            if (cardElement.classList.contains('selected')) {
+                const closeButton = document.createElement('span');
+
+                closeButton.appendChild(document.createTextNode('X'));
+                closeButton.className = 'close-btn';
+                closeButton.style = 'user-select: none; cursor: pointer';
+                closeButton.addEventListener('click', () => {
+                    document.querySelector('#cards').removeChild(cardElement);
+                });
+
+                cardElement.appendChild(closeButton);
+            } else {
+                const closeButton = cardElement.querySelector('.close-btn');
+                cardElement.removeChild(closeButton);
+            }
+        }
+
+        const add_card = () => {
+            const title = document.querySelector('#title').value;
+            const text = document.querySelector('#text').value;
+            const img = document.querySelector('#img').value;
+
+            console.log(title, text, img)
+
+            if (title && text && img) {
+                create_card({ title, text, img });
+                document.querySelector('#title').value = '';
+                document.querySelector('#text').value = '';
+                document.querySelector('#img').value = '';
+            }
+
+        }
+
+        const create_card = (card_object) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style = 'width: 300px; position: relative';
+
+            const img = document.createElement('img');
+            img.src = card_object.img;
+            img.className = 'card-img-top';
+            img.alt = card_object.title;
+            img.style = 'pointer-events: none; user-select: none';
+
+            const card_body = document.createElement('div');
+            card_body.className = 'card-body';
+            card_body.style = 'pointer-events: none; user-select: none';
+
+            const card_title = document.createElement('h5');
+            card_title.className = 'card-title';
+            card_title.style = 'pointer-events: none; user-select: none';
+
+            const card_title_content = document.createTextNode(card_object.title);
+            card_title_content.style = 'pointer-events: none; user-select: none';
+
+            const card_text = document.createElement('p');
+            card_text.className = 'card-text';
+            card_text.style = 'pointer-events: none; user-select: none';
+
+            const card_text_content = document.createTextNode(card_object.text);
+            card_text_content.style = 'pointer-events: none; user-select: none';
+            //
+
+            card_text.appendChild(card_text_content);
+
+            card_title.appendChild(card_title_content);
+
+            card_body.appendChild(card_title);
+            card_body.appendChild(card_text);
+
+            card.appendChild(img);
+            card.appendChild(card_body);
+
+            document.querySelector('#cards').appendChild(card);
+
+            const cards = document.getElementsByClassName('card');
+
+            for (const single_card of cards) {
+                single_card.removeEventListener('click', chose_card, true);
+                single_card.addEventListener('click', chose_card);
+            }
+        };
+    </script>
+</body>
+
+</html>

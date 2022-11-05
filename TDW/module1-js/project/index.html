@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Blackjack by Rato</title>
+    <link rel="icon" type="image/x-icon" href="../project/images/mouse.svg">
+    <link rel="stylesheet" href="styles.css">
+
+    <meta name="description" content="Miniprojeto TDW">
+    <meta name="keywords" content="tdw deca andrerato rato">
+    <meta charset="UTF-8">
+
+    <script src="web_components/playing_card.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+
+<body class="bg-light text-dark">
+    <nav class="navbar bg-light shadow-sm" style="height: 56px">
+        <div class="container-fluid">
+            <img src="images/blackjack.svg" class="navbar-brand logo" alt="" width="40" height="40">
+            <div class="right_nav d-flex flex-row align-items-center justify-content-between">
+                <span id="games_hist">GAMES HISTORY</span>
+                <span><b>BALANCE: </b><span id="balance_in_screen">0</span> RATS</span>
+                <img alt="off" src="images/lights_off.svg" id="theme_toggler" width="20" height="20" />
+            </div>
+        </div>
+    </nav>
+
+    <div class="position-relative container-md page d-flex justify-content-between align-items-center">
+        <!-- Space where the game is played -->
+        <gameboard class="d-flex flex-column justify-content-between align-items-center">
+            <span style="display: none; position: absolute; top: 30px; font-size: 16px;" id="betting"
+                class="badge bg-secondary">You bet 0 RATS</span>
+            <div class="d-flex flex-column gap-3">
+                <span>
+                    <p class="text-center h3">Dealer Score</p>
+                    <p class="text-center h5" id="computer_score">0</p>
+                </span>
+                <span>
+                    <p class="text-center h3">Your Score</p>
+                    <p class="text-center h5" id="player_score">0</p>
+                </span>
+            </div>
+            <div class="d-flex flex-row gap-5">
+                <button id="make_a_bet" type="button" class="btn btn-primary">
+                    MAKE A BET AND START A NEW GAME
+                </button>
+                <button id="draw_card" type="button" style="display: none" class="btn btn-primary">
+                    DRAW A CARD
+                </button>
+                <button id="end_turn" type="button" style="display: none" class="btn btn-primary">
+                    END TURN
+                </button>
+                <div id="loading_play" class="spinner-border text-primary" role="status" style="display: none">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </gameboard>
+
+        <!-- Div that will contain the drawed cards -->
+        <div id="player_cards" class="position-absolute d-flex flex-column gap-2">
+
+        </div>
+
+        <!-- Div that will contain the drawed cards -->
+        <div id="dealer_cards" class="position-absolute d-flex flex-column gap-2" style="right: 0">
+
+        </div>
+
+        <!-- Game ending modal -->
+        <div class="modal fade text-dark" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"></h5>
+                    </div>
+                    <div class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="new_game">NEW GAME</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Betting modal -->
+        <div class="modal fade text-dark" id="modal_bet" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">MAKE A BET</h5>
+                    </div>
+                    <div class="modal-body">
+                        <h5>You have <span id="my_current_money">0</span> RATS</h5>
+                        <div class="input-group mb-3">
+                            <input type="number" min="0" class="form-control" placeholder="0" aria-label="RATS"
+                                id="input_money" aria-describedby="basic-addon2">
+                            <span class="input-group-text" id="basic-addon2">RATS</span>
+                        </div>
+                        <span class="text-danger text-align-left" style="display: none" id="bet_warning"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="cancel_bet">CANCEL</button>
+                        <button type="button" class="btn btn-primary" id="place_bet">PLACE BET</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games history modal -->
+        <div class="modal fade text-dark" id="modal_leaderboard" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">GAMES HISTORY</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="text-align: center" id="col_player">Your Score</th>
+                                    <th scope="col" style="text-align: center" id="col_computer">Dealer Score</th>
+                                    <th scope="col" style="text-align: center" id="col_bet">Bet</th>
+                                    <th scope="col" style="text-align: center" id="col_result">Final Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help modal -->
+        <div class="modal fade text-dark" id="modal_help" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 50%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">THE GAME</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p><b>Blackjack by Rato</b> is simple game similar to the original Blackjack.
+                            It was developed in the scope of <b>Web Development Technologies</b> subject of the
+                            <b>Communication and Web Technologies Master's</b> degree.
+                        </p>
+                        <p>The main goal is to draw cards and get a score that is as close to 21.</p>
+                        <h4>How To Play</h4>
+                        <p>Before any game, the Player must place a bet (minimum value is 0).</p>
+                        <p>When the betting step is completed, the player is the first one to play by drawing a card.
+                            After that, the player can choose between drawing a new card or ending the turn.</p>
+                        <p>After the payer's turn, the Dealer starts to draw cards.</p>
+                        <p>The game ends if any of the players get a score higher than 21 or when both of the player
+                            decide to stop playing.</p>
+                        <h4>Possible Scores</h4>
+                        <ul>
+                            <li>The Player has 21 or less points:</li>
+                            <ul>
+                                <li>The Dealer has more points - Dealer wins</li>
+                                <li>The Dealer has the same points - Dealer wins</li>
+                                <li>The Dealer has less points - Player wins</li>
+                            </ul>
+                            <li>The Player has more than 21 points - Dealer wins</li>
+                        </ul>
+                        <h4>Card Values</h4>
+                        <div class="d-flex flex-row align-items-center justify-content-center"
+                            style="width: 100%; gap: 10px" id="card_values"></div>
+                    </div>
+                    <div class="modal-footer d-flex flex-row justify-content-between">
+                        <button type="button" class="btn btn-secondary" id="report-btn">GET PROJECT REPORT</button>
+                        <button type="button" class="btn btn-danger" id="close-btn">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating help button -->
+    <button class="position-absolute btn btn-primary help d-flex align-items-center justify-content-center">
+        <img alt="question mark" src="images/question_mark.svg" />
+    </button>
+
+    <footer class="bg-lighttext-lg-start d-flex flex-row justify-content-between p-3">
+        <div class="text-start">
+            André Rato
+        </div>
+        <div class="text-end">
+            MCTW | Tecnologias e Desenvolvimento Web
+        </div>
+    </footer>
+
+    <!-- The script is loaded only in the bottom of the page in order to load the page's static content and then be able to execute all the necessary scipts -->
+    <script src="scripts.js"></script>
+</body>
+
+</html>

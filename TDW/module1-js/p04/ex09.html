@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>TDW P04_09</title>
+</head>
+
+<body>
+    <div class="bg-light pt-3 pb-3">
+        <div class="container">
+            <h1 class="display-4">É só cartões</h1>
+            <p class="lead">Para aprender conceitos de programação</p>
+        </div>
+    </div>
+    <div class="container">
+        <div clas="row">
+            <button class="btn btn-primary">10</button>
+            <button class="btn btn-primary">20</button>
+            <button class="btn btn-primary">30</button>
+            <button class="btn btn-primary btn-light">Light</button>
+            <button class="btn btn-primary btn-dark">Dark</button>
+            <span>Displaying <b id="card_numbers">0</b> cards</span>
+        </div>
+        <div id="cards" class="row mt-3">
+            <!-- Content goes here -->
+        </div>
+    </div>
+    </div>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <script>
+        const body = document.querySelector('body');
+
+        document.querySelector('.btn-light').addEventListener('click', () => {
+            body.classList.remove('bg-dark');
+            body.classList.add('bg-light');
+        });
+
+        document.querySelector('.btn-dark').addEventListener('click', () => {
+            body.classList.remove('bg-light');
+            body.classList.add('bg-dark');
+        });
+
+        const addCard = (where, style, title, image, description, nat) => {
+            let card = document.createElement('div');
+            card.className = 'col-md-3 mb-3';
+            card.innerHTML = `
+            <div class="card bg-${style}" style="width: 300px; position: relative;">
+                <img src="${image}" class="card-img-top" alt="${title}" style="pointer-events: none; user-select: none;"/>
+                <div class="card-body" style="pointer-events: none; user-select: none;">
+                   <h5 class="card-title" style="pointer-events: none; user-select: none;">${title}</h5>
+                   <p class="card-text" style="pointer-events: none; user-select: none;">${description}</p>
+                   <img alt="${nat}" src="https://countryflagsapi.com/svg/${nat}" style="width: 35px; height: 20px" />
+                </div>
+            </div>
+            `
+
+            where.prepend(card);
+
+            let number_cards = document.querySelector('#card_numbers');
+
+            number_cards.innerText = parseInt(number_cards.innerText) + 1;
+        }
+
+        const makeRequest = (url, callback, method = 'GET') => {
+            const xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = () => {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                    callback(xmlHttp.responseText)
+                }
+            }
+            xmlHttp.open(method, url, true); // true --> async request
+            xmlHttp.send();
+        }
+
+        const getColor = (index) => {
+            switch (index % 4) {
+                case 0:
+                    return 'success'
+                case 1:
+                    return 'danger'
+                case 2:
+                    return 'info'
+                default:
+                    return 'primary'
+
+            }
+        }
+
+        const buildCards = (event) => {
+            const btn = event.target.innerText;
+
+            const cards = document.getElementById('cards');
+
+            makeRequest('https://randomuser.me/api/?results=' + btn, (res) => {
+                const start = cards.childElementCount;
+                const data = JSON.parse(res).results;
+
+                for (let i = start + 1; i <= start + Number(btn); i++) {
+                    const element = data[i - start - 1];
+                    addCard(cards, getColor(i - 1), Object.values(element.name).join(' '), element.picture.large, element.email, element.nat);
+                }
+            });
+        }
+
+        const btns = document.getElementsByClassName('btn');
+
+        for (const btn of btns) {
+            btn.addEventListener('click', buildCards);
+        }
+
+    </script>
+</body>
+
+</html>
