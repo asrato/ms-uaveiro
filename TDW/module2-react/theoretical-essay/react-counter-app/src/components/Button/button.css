@@ -1,0 +1,9 @@
+.btn {
+    all: unset;
+    cursor: pointer;
+    background-color: #000;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 5px;
+    text-transform: uppercase;
+}
