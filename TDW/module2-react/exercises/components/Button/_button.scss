@@ -1,0 +1,12 @@
+.btn {
+    all: unset;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background-color: $gray;
+    color: $white;
+
+    &:hover {
+        cursor: pointer;
+        background-color: $gray2;
+    }
+}

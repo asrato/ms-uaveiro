@@ -1,0 +1,59 @@
+nav {
+    height: 100vh;
+    width: 250px;
+    background-color: $gray;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding-top: 150px;
+    position: relative;
+
+    @include mobile {
+        width: 100vw;
+        height: 150px;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 50px;
+    }
+
+    &>.option {
+        all: unset;
+        color: $gray3;
+        display: flex;
+        flex-direction: row;
+        gap: 6px;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+            cursor: pointer;
+            color: $white;
+        }
+
+        &.downlaod {
+            position: absolute;
+            bottom: 40px;
+
+            &.mobile {
+                display: none;
+            }
+
+            @include mobile {
+                right: 50px;
+                bottom: auto;
+                
+                &.desktop {
+                    display: none;
+                }
+
+                &.mobile {
+                    display: block;
+                }
+            }
+        }
+    }
+}
